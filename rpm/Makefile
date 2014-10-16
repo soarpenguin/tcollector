@@ -12,7 +12,7 @@
 # see <http://www.gnu.org/licenses/>.
 
 PACKAGE_VERSION := 1.0.1
-RPM_REVISION := 5
+RPM_REVISION := 10
 # Where do we install our files.
 tcollectordir := /usr/local/tcollector
 
@@ -22,7 +22,7 @@ CP_P := cp -p
 # In some environment this command can be called `gsha1sum' or `digest'.
 SHA1SUM := sha1sum
 ZIP := zip -9
-PYTHON_VERSION := 2.6
+PYTHON_VERSION := 2.7
 PYTHON := python$(PYTHON_VERSION)
 
 # Our "source tree" is in the parent directory, always.
@@ -31,6 +31,7 @@ VPATH := ..
 # What files to put in the EOSRPM.
 FILES := \
 	collectors/0/dfstat.py	\
+	collectors/0/eos.py	\
 	collectors/0/ifstat.py	\
 	collectors/0/iostat.py	\
 	collectors/0/netstat.py	\
@@ -93,14 +94,12 @@ manifest.txt: $(EOSRPM) Makefile
           fi; \
           echo "\"$(tcollectordir)/$$file\"" >>filelist; \
           case $$file in \
-            (*.py) echo "\"$(tcollectordir)/$${file}c\"" >>filelist; \
-                   echo "\"$(tcollectordir)/$${file}o\"" >>filelist;; \
+            (*.py) echo "\"$(tcollectordir)/$${file}c\"" >>filelist;; \
           esac; \
           echo $(CP_P) "$(VPATH)/$$file" "'$(DESTDIR)/$(tcollectordir)/$$file'"; \
           $(CP_P) "$(VPATH)/$$file" "$(DESTDIR)/$(tcollectordir)/$$file" || exit $$?; \
         done
 	$(PYTHON) -m compileall -q "$(DESTDIR)"
-	$(PYTHON) -O -m compileall -q "$(DESTDIR)"
 	chmod -R a+rX "$(DESTDIR)"
 	@touch $@
 
